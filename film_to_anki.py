@@ -29,6 +29,7 @@ def main():
         is_events = False
         is_events_fmt = False
         dic_fmt = {}
+        fullsub = []
         for line in f:
             # skip comments and empty lines
             if line.startswith(';') or len(line) <= 1:
@@ -52,7 +53,9 @@ def main():
                 sub_strt = line.split(',')[dic_fmt['Start']].strip()
                 sub_end = line.split(',')[dic_fmt['End']].strip()
                 sub_text = line.split(',')[dic_fmt['Text']].strip()
+                fullsub = fullsub + [(sub_strt, sub_end, sub_text)]
 
+    print(fullsub)
     return None
 
 
