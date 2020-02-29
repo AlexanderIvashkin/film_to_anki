@@ -26,6 +26,7 @@ def main():
 
     # read eng.ass
     print(parse_ass(flnm_engass))
+    print(parse_ass(flnm_origass))
 
 
 #    # create command string for a given track
