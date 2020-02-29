@@ -49,9 +49,9 @@ def main():
                 if line.strip()[0] == '[':
                     is_events = False
                     continue
-                print('Start: {0}'.format(line.split(',')[dic_fmt['Start']].strip()))
-                print('End: {0}'.format(line.split(',')[dic_fmt['End']].strip()))
-                print('Text: {0}'.format(line.split(',')[dic_fmt['Text']].strip()))
+                sub_strt = line.split(',')[dic_fmt['Start']].strip()
+                sub_end = line.split(',')[dic_fmt['End']].strip()
+                sub_text = line.split(',')[dic_fmt['Text']].strip()
 
     return None
 
