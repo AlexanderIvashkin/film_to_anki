@@ -25,7 +25,27 @@ def main():
     #command_im_cleanup = 'rm pallete.png'
 
     # read eng.ass
-    with open(flnm_engass, 'r') as f:
+    print(parse_ass(flnm_engass))
+
+
+#    # create command string for a given track
+#    orig, trans, start, end, sound, image = line.strip().split(';')
+#    command_au = cmd_string_audio.format(tr=original_track, st=start, en=end, nm=sound)
+#    command_im_1 = cmd_string_im_1.format(tr=original_track, st=start, en=end, nm=image)
+#    command_im_2 = cmd_string_im_2.format(tr=original_track, st=start, en=end, nm=image)
+#
+#    # use subprocess to execute the command in the shell
+#    subprocess.call(command_au, shell=True)
+#    subprocess.call(command_im_1, shell=True)
+#    subprocess.call(command_im_2, shell=True)
+#
+#    # Remove the palette.png
+#    subprocess.call(command_im_cleanup, shell=True)
+
+def parse_ass(flnm):
+    """Read .ass subtitle and parse [Events]"""
+
+    with open(flnm, 'r') as f:
         is_events = False
         is_events_fmt = False
         dic_fmt = {}
@@ -55,24 +75,7 @@ def main():
                 sub_text = line.split(',')[dic_fmt['Text']].strip()
                 fullsub = fullsub + [(sub_strt, sub_end, sub_text)]
 
-    print(fullsub)
-    return None
-
-
-#    # create command string for a given track
-#    orig, trans, start, end, sound, image = line.strip().split(';')
-#    command_au = cmd_string_audio.format(tr=original_track, st=start, en=end, nm=sound)
-#    command_im_1 = cmd_string_im_1.format(tr=original_track, st=start, en=end, nm=image)
-#    command_im_2 = cmd_string_im_2.format(tr=original_track, st=start, en=end, nm=image)
-#
-#    # use subprocess to execute the command in the shell
-#    subprocess.call(command_au, shell=True)
-#    subprocess.call(command_im_1, shell=True)
-#    subprocess.call(command_im_2, shell=True)
-#
-#    # Remove the palette.png
-#    subprocess.call(command_im_cleanup, shell=True)
-
+    return fullsub
 
 
 if __name__ == '__main__':
