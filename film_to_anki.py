@@ -36,7 +36,7 @@ def main():
         for origsub in origass:
             # Less than a second of disparity between English sub and original language sub
             if abs(sub[0] - origsub[0]) < 1:
-                finalass += [(sub[0], sub[1], sub[2], origsub[2])]
+                finalass += [(sub[0], sub[1], sub[2].replace('\\N', '<br>'), origsub[2].replace('\\N', '<br>'))]
 
     print(finalass)
 
