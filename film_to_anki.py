@@ -26,10 +26,19 @@ def main():
     #cmd_string_im_2 = 'ffmpeg -y -ss {st} -to {en} -i "{tr}" -i pallete.png -filter_complex "fps=2,scale=320:-1:flags=lanczos[x];[x][1:v]paletteuse" /Users/AlexanderIvashkin/Library/Application\ Support/Anki2/User\ 1/collection.media/"{nm}"'
     #command_im_cleanup = 'rm pallete.png'
 
-    # read eng.ass
-    print(parse_ass(flnm_engass))
-    print(parse_ass(flnm_origass))
 
+    engass = parse_ass(flnm_engass)
+    origass = parse_ass(flnm_origass)
+    #print(engass)
+    #print()
+    finalass = []
+    for sub in engass:
+        for origsub in origass:
+            # Less than a second of disparity between English sub and original language sub
+            if abs(sub[0] - origsub[0]) < 1:
+                finalass += [(sub[0], sub[1], sub[2], origsub[2])]
+
+    print(finalass)
 
 #    # create command string for a given track
 #    orig, trans, start, end, sound, image = line.strip().split(';')
