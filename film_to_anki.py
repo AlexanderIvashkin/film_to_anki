@@ -3,6 +3,8 @@
 import subprocess
 import sys
 
+class InvalidTimestamp(ValueError):
+    """Timestamp must be in the H:M:S.SS format"""
 
 def main():
     """Split film into Anki pieces by calling ffmpeg from the shell"""
@@ -70,11 +72,22 @@ def parse_ass(flnm):
                     is_events = False
                     continue
                 sub_strt = line.split(',')[dic_fmt['Start']].strip()
+                sub_strt = timestamp_to_secs(sub_strt)
                 sub_end = line.split(',')[dic_fmt['End']].strip()
+                sub_end = timestamp_to_secs(sub_end)
                 sub_text = line.split(',')[dic_fmt['Text']].strip()
                 fullsub = fullsub + [(sub_strt, sub_end, sub_text)]
 
     return fullsub
+
+
+def timestamp_to_secs(timestamp):
+    """Convert a H:M:S.SS timestamp into decimal seconds (S.SS)"""
+    time = timestamp.split(':')
+    if len(time) != 3:
+        raise InvalidTimestamp
+    return sum(list(map(lambda tt, mm: float(tt)*mm, time, [3600, 60, 1])))
+
 
 
 if __name__ == '__main__':
