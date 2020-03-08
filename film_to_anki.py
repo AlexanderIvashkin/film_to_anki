@@ -10,17 +10,19 @@ def main():
     """Split film into Anki pieces by calling ffmpeg from the shell"""
 
     # check command line for original file and track list file
-    if len(sys.argv) != 4:
-        print ('usage: {0} <film> <orig.ass> <eng.ass>'.format(sys.argv[0]))
+    if len(sys.argv) != 5:
+        print ('usage: {0} <film> <orig.ass> <eng.ass> <anki.csv>'.format(sys.argv[0]))
         exit(1)
 
     # record command line args
     flnm_film = sys.argv[1]
     flnm_origass = sys.argv[2]
     flnm_engass = sys.argv[3]
+    flnm_ankicsv = sys.argv[4]
 
     # create a template of the ffmpeg call in advance
     #cmd_string_audio = 'ffmpeg -y -i "{tr}" -acodec copy -ss {st} -to {en} /Users/AlexanderIvashkin/Library/Application\ Support/Anki2/User\ 1/collection.media/"{nm}"'
+    cmd_string_audio = 'ffmpeg -y -i "{film}" -map 0:2 -acodec copy -ss {start} -to {end} "{flnm_output}"'
     #cmd_string_image = 'ffmpeg -y -i "{tr}" -ss {st} -to {en} -pix_fmt rgb8 -r 1 /Users/AlexanderIvashkin/Library/Application\ Support/Anki2/User\ 1/collection.media/"{nm}"'
     #cmd_string_im_1 =  'ffmpeg -y -ss {st} -to {en} -i "{tr}" -vf fps=2,scale=320:-1:flags=lanczos,palettegen pallete.png'
     #cmd_string_im_2 = 'ffmpeg -y -ss {st} -to {en} -i "{tr}" -i pallete.png -filter_complex "fps=2,scale=320:-1:flags=lanczos[x];[x][1:v]paletteuse" /Users/AlexanderIvashkin/Library/Application\ Support/Anki2/User\ 1/collection.media/"{nm}"'
@@ -36,9 +38,16 @@ def main():
         for origsub in origass:
             # Less than a second of disparity between English sub and original language sub
             if abs(sub[0] - origsub[0]) < 1:
-                finalass += [(sub[0], sub[1], sub[2].replace('\\N', '<br>'), origsub[2].replace('\\N', '<br>'))]
+                finalass += [(origsub[0]-0.5, origsub[1]+0.5, sub[2].replace('\\N', '<br>'), origsub[2].replace('\\N', '<br>'))]
 
-    print(finalass)
+    csv_anki = ''
+    for anki in finalass:
+        flnm_audio = str(anki[0])) + '.ac3'
+        command_audio = cmd_string_audio.format(film=flnm_film, start=anki[0], end=anki[1],flnm_output=flnm_film + '_' + flnm_audio
+        #print(command_audio)
+        subprocess.call(command_audio, shell=True)
+        csv_anki += anki[2] + ', ' + anki[3] + ', ' + flnm_audio
+
 
 #    # create command string for a given track
 #    orig, trans, start, end, sound, image = line.strip().split(';')
