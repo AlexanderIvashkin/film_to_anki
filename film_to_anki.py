@@ -57,13 +57,11 @@ def parse_ass(flnm):
                 continue
             # look for [Events]
             if not is_events:
-                if is_events_fmt:
+                if line.strip() == '[Events]':
+                    line = next(f)
                     for i, fld in enumerate(line.split(',')):
                         dic_fmt[fld.strip()] = i
                     is_events = True
-                    continue
-                if line.strip() == '[Events]':
-                    is_events_fmt = True
                     continue
 
             # We're inside [Events]
