@@ -10,8 +10,8 @@ def main():
     """Split film into Anki pieces by calling ffmpeg from the shell"""
 
     # check command line for original file and track list file
-    if len(sys.argv) != 5:
-        print ('usage: {0} <film> <orig.ass> <eng.ass> <anki.csv>'.format(sys.argv[0]))
+    if len(sys.argv) != 6:
+        print ('usage: {0} <video file> <orig.ass> <eng.ass> <anki.csv> <film title>'.format(sys.argv[0]))
         exit(1)
 
     # record command line args
@@ -19,6 +19,7 @@ def main():
     flnm_origass = sys.argv[2]
     flnm_engass = sys.argv[3]
     flnm_ankicsv = sys.argv[4]
+    film_title = sys.argv[5]
 
     # create a template of the ffmpeg call in advance
     #cmd_string_audio = 'ffmpeg -y -i "{tr}" -acodec copy -ss {st} -to {en} /Users/AlexanderIvashkin/Library/Application\ Support/Anki2/User\ 1/collection.media/"{nm}"'
@@ -44,13 +45,12 @@ def main():
         # CSV header
         ankicsv.write('Original,Translation,Sound,Image,Source\n')
         for anki in finalass:
-            csv_anki = ''
-            flnm_audio = str(anki[0]) + '.ac3'
-            flnm_image = str(anki[0]) + '.gif'
+            flnm_audio = film_title + '_' + str(anki[0]) + '.ac3'
+            flnm_image = film_title + '_' + str(anki[0]) + '.gif'
             #command_audio = cmd_string_audio.format(film=flnm_film, start=anki[0], end=anki[1],flnm_output=flnm_film + '_' + flnm_audio
             #print(command_audio)
             #subprocess.call(command_audio, shell=True)
-            csv_anki += '"' + anki[2] + '","' + anki[3] + '","' + flnm_audio + '","' + flnm_image + '"'
+            csv_anki = '"' + anki[2] + '","' + anki[3] + '","' + flnm_audio + '","' + flnm_image + '","' + film_title + '"'
             ankicsv.write(csv_anki + '\n')
 
 
@@ -74,7 +74,6 @@ def parse_ass(flnm):
 
     with open(flnm, 'r') as f:
         is_events = False
-        is_events_fmt = False
         dic_fmt = {}
         fullsub = []
         for line in f:
@@ -110,7 +109,9 @@ def timestamp_to_secs(timestamp):
     time = timestamp.split(':')
     if len(time) != 3:
         raise InvalidTimestamp
-    return sum(list(map(lambda tt, mm: float(tt)*mm, time, [3600, 60, 1])))
+    return sum(float(t[0])*float(t[1]) for t in zip(time, [3600, 60, 1]))
+    # Old complicated version:
+    #return sum(list(map(lambda tt, mm: float(tt)*mm, time, [3600, 60, 1])))
 
 
 
