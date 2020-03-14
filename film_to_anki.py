@@ -40,13 +40,19 @@ def main():
             if abs(sub[0] - origsub[0]) < 1:
                 finalass += [(origsub[0]-0.5, origsub[1]+0.5, sub[2].replace('\\N', '<br>'), origsub[2].replace('\\N', '<br>'))]
 
-    csv_anki = ''
-    for anki in finalass:
-        flnm_audio = str(anki[0])) + '.ac3'
-        command_audio = cmd_string_audio.format(film=flnm_film, start=anki[0], end=anki[1],flnm_output=flnm_film + '_' + flnm_audio
-        #print(command_audio)
-        subprocess.call(command_audio, shell=True)
-        csv_anki += anki[2] + ', ' + anki[3] + ', ' + flnm_audio
+    with open(flnm_ankicsv, 'w') as ankicsv:
+        # CSV header
+        ankicsv.write('Original,Translation,Sound,Image,Source\n')
+        for anki in finalass:
+            csv_anki = ''
+            flnm_audio = str(anki[0]) + '.ac3'
+            flnm_image = str(anki[0]) + '.gif'
+            #command_audio = cmd_string_audio.format(film=flnm_film, start=anki[0], end=anki[1],flnm_output=flnm_film + '_' + flnm_audio
+            #print(command_audio)
+            #subprocess.call(command_audio, shell=True)
+            csv_anki += '"' + anki[2] + '","' + anki[3] + '","' + flnm_audio + '","' + flnm_image + '"'
+            ankicsv.write(csv_anki + '\n')
+
 
 
 #    # create command string for a given track
