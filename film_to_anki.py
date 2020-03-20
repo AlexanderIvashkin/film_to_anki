@@ -2,26 +2,25 @@
 
 import subprocess
 import sys
+import json
 
 class InvalidTimestamp(ValueError):
     """Timestamp must be in the H:M:S.SS format"""
 
+class FFMpegError(ValueError):
+    """ffmpeg was terminated abnormally"""
+
 def main():
     """Split film into Anki pieces by calling ffmpeg from the shell"""
 
-    # check command line for original file and track list file
     if len(sys.argv) != 6:
         print ('usage: {0} <video file> <orig.ass> <eng.ass> <anki.csv> <film title>'.format(sys.argv[0]))
         exit(1)
 
     # record command line args
-    flnm_film = sys.argv[1]
-    flnm_origass = sys.argv[2]
-    flnm_engass = sys.argv[3]
-    flnm_ankicsv = sys.argv[4]
-    film_title = sys.argv[5]
+    flnm_me, flnm_film, flnm_origass, flnm_engass, flnm_ankicsv, film_title = sys.argv
 
-    # create a template of the ffmpeg call in advance
+    # create templates for the ffmpeg calls
     #cmd_string_audio = 'ffmpeg -y -i "{tr}" -acodec copy -ss {st} -to {en} /Users/AlexanderIvashkin/Library/Application\ Support/Anki2/User\ 1/collection.media/"{nm}"'
     cmd_string_audio = 'ffmpeg -y -i "{film}" -map 0:2 -acodec copy -ss {start} -to {end} "{flnm_output}"'
     #cmd_string_image = 'ffmpeg -y -i "{tr}" -ss {st} -to {en} -pix_fmt rgb8 -r 1 /Users/AlexanderIvashkin/Library/Application\ Support/Anki2/User\ 1/collection.media/"{nm}"'
@@ -47,7 +46,7 @@ def main():
         for anki in finalass:
             flnm_audio = film_title + '_' + str(anki[0]) + '.ac3'
             flnm_image = film_title + '_' + str(anki[0]) + '.gif'
-            #command_audio = cmd_string_audio.format(film=flnm_film, start=anki[0], end=anki[1],flnm_output=flnm_film + '_' + flnm_audio
+            #command_audio = cmd_string_audio.format(film=flnm_film, start=anki[0], end=anki[1],flnm_output=flnm_film + '_' + flnm_audio)
             #print(command_audio)
             #subprocess.call(command_audio, shell=True)
             csv_anki = '"' + anki[2] + '","' + anki[3] + '","' + flnm_audio + '","' + flnm_image + '","' + film_title + '"'
@@ -113,6 +112,13 @@ def timestamp_to_secs(timestamp):
     # Old complicated version:
     #return sum(list(map(lambda tt, mm: float(tt)*mm, time, [3600, 60, 1])))
 
+def ffprobe_streams(filename):
+    """Run ffprobe on the file to obtain streams in JSON format"""
+    cmd_ffprobe = 'ffprobe -of json -show_streams "{film}"'
+    cmpl_proc = subprocess.run(cmd_ffprobe.format(film=filename).split(' '), capture_output = True)
+    if cmpl_proc.returncode != 0:
+        raise FFMpegError
+    return json.loads(cmpl_proc.stdout)
 
 
 if __name__ == '__main__':
