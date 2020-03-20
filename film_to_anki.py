@@ -31,8 +31,6 @@ def main():
 
     engass = parse_ass(flnm_engass)
     origass = parse_ass(flnm_origass)
-    #print(engass)
-    #print()
     finalass = []
     for sub in engass:
         for origsub in origass:
@@ -109,8 +107,6 @@ def timestamp_to_secs(timestamp):
     if len(time) != 3:
         raise InvalidTimestamp
     return sum(float(t[0])*float(t[1]) for t in zip(time, [3600, 60, 1]))
-    # Old complicated version:
-    #return sum(list(map(lambda tt, mm: float(tt)*mm, time, [3600, 60, 1])))
 
 def ffprobe_streams(filename):
     """Run ffprobe on the file to obtain streams in JSON format"""
